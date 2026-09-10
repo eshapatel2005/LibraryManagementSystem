@@ -1,22 +1,30 @@
 {
   "name": "librarymanagementsystem",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongoose": "^9.9.5"
+    "cron": "^4.4.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "joi": "^18.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.1",
+    "multer": "^2.2.0",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^9.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
