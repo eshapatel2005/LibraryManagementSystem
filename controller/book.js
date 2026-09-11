@@ -59,7 +59,7 @@ const createBook = async (req, res) => {
 };
 
 //Get all books 
-const getAllBooks=async (req,res)=>{
+const getBooks=async (req,res)=>{
     try{
         const books=await Book.find();
         res.status(200).json({
