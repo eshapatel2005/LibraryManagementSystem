@@ -1,5 +1,6 @@
-const express=require("express");
-const router=express.Router();
+const express = require("express");
+
+const router = express.Router();
 
 const {
     createBook,
@@ -7,12 +8,12 @@ const {
     getBookById,
     updateBook,
     deleteBook
-}=require("../controller/book");
+} = require("../controller/book");
 
-router.post("/",createBook);
-router.get("/",getBooks);
-router.get("/:id",getBookById);
-router.put("/:id",updateBook);
-router.delete("/:id",deleteBook);
+router.post("/", createBook);
+router.get("/", getBooks);
+router.get("/:id", getBookById);
+router.put("/:id", updateBook);
+router.delete("/:id", deleteBook);
 
-module.exports=router;
+module.exports = router;

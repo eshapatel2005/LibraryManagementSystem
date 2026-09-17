@@ -106,7 +106,7 @@ const getBookById=async(req,res)=>{
 };
 
 //Update Book 
-const updateBook=async(re1,res)=>{
+const updateBook=async(req,res)=>{
     try{
         const{error}=validateUpdateBook(req.body);
         if(error){
