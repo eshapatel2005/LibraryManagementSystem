@@ -1,180 +1,268 @@
 const User = require("../models/user.model");
-const Joi = require("joi");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-//validation
-const validateCreateUser = (data) => {
-  const schema = Joi.object({
-    name: Joi.string().min(3).required().messages({
-      "string.empty": "Please enter a valid name.",
-      "string.min": "Please enter a valid name.",
-      "any.required": "Please enter a valid name.",
-    }),
-    email: Joi.string().email().required(),
-    phone: Joi.string().required(),
-    password: Joi.string().min(8).required(),
-  });
-  return schema.validate(data, {
-    convert: false,
-  });
-};
+const {
+    validateCreateUser,
+    validateGetUser,
+    validateUpdateUser,
+    validateLoginUser
+} = require("../validation/user");
 
-const validateGetUser = (data) => {
-  const schema = Joi.object({
-    id: Joi.string().optional(),
-  });
-  return schema.validate(data);
-};
 
-const validateUpdateUser = (data) => {
-  const schema = Joi.object({
-    name: Joi.string().min(3),
-    email: Joi.string().email(),
-    phone: Joi.string(),
-  });
-
-  return schema.validate(data);
-};
-
-//Create User
+// Create User
 const createUser = async (req, res) => {
-  try {
-    const { error } = validateCreateUser(req.body);
+    try {
 
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
+        const { error } = validateCreateUser(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message
+            });
+        }
+
+        // Hash Password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        req.body.password = hashedPassword;
+
+        // Create User
+        const user = await User.create(req.body);
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.USER_AUTH_TOKEN
+        );
+
+        // Save Token
+        user.token = token;
+        await user.save();
+
+        res.status(201).json({
+            success: true,
+            message: "User Created Successfully",
+            data: user
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
-    const user = await User.create(req.body);
-
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      data: user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
 };
 
-//Get All Users
+
+// Get All Users
 const getUsers = async (req, res) => {
-  try {
-    const users = await User.find();
+    try {
 
-    res.status(200).json({
-      success: true,
-      message: "Users Fetched Successfully",
-      data: users,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
+        const users = await User.find();
+
+        res.status(200).json({
+            success: true,
+            message: "Users Fetched Successfully",
+            data: users
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
 };
 
-//Get Users By Id
+
+// Get User By ID
 const getUserById = async (req, res) => {
-  try {
-    const { error } = validateGetUser(req.params);
+    try {
 
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
+        const { error } = validateGetUser(req.params);
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message
+            });
+        }
+
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User Fetched Successfully",
+            data: user
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
-
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User Not Found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "User Fetched Successfully",
-      data: user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
 };
 
-//Update User
+
+// Update User
 const updateUser = async (req, res) => {
-  try {
-    const { error } = validateUpdateUser(req.body);
+    try {
 
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
+        const { error } = validateUpdateUser(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User Updated Successfully",
+            data: user
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
-
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User Not Found",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      message: "User Updated Successfully",
-      data: user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
 };
+
 
 // Delete User
 const deleteUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    try {
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User Not Found",
-      });
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User Deleted Successfully"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
-
-    res.status(200).json({
-      success: true,
-      message: "User Deleted Successfully",
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
 };
 
+
+// Login User
+const loginUser = async (req, res) => {
+    try {
+
+        // Validation
+        const { error } = validateLoginUser(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message
+            });
+        }
+
+        // Check Email
+        const user = await User.findOne({
+            email: req.body.email
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            });
+        }
+
+        // Check Password
+        const isMatch = await bcrypt.compare(
+            req.body.password,
+            user.password
+        );
+
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Password"
+            });
+        }
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.USER_AUTH_TOKEN
+        );
+
+        // Save Token
+        user.token = token;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Login Successful",
+            token: token
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+};
+
+
 module.exports = {
-  createUser,
-  getUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
+    createUser,
+    getUsers,
+    getUserById,
+    updateUser,
+    deleteUser,
+    loginUser
 };
