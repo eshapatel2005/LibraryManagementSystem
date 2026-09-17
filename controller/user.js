@@ -11,6 +11,7 @@ const validateCreateUser = (data) => {
     }),
     email: Joi.string().email().required(),
     phone: Joi.string().required(),
+    password: Joi.string().min(8).required()
   });
   return schema.validate(data, {
     convert: false,
@@ -29,6 +30,7 @@ const validateUpdateUser = (data) => {
     name: Joi.string().min(3),
     email: Joi.string().email(),
     phone: Joi.string(),
+    password: Joi.string().min(8)
   });
 
   return schema.validate(data);
