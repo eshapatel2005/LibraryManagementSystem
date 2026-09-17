@@ -12,17 +12,47 @@ const {
 } = require("../controller/user");
 
 const { auth } = require("../middleware/auth");
+const validation = require("../middleware/validation");
+
+const {
+    validateCreateUser,
+    validateGetUser,
+    validateUpdateUser,
+    validateLoginUser
+} = require("../validation/user");
 
 // Create User
-router.post("/", createUser);
+router.post(
+    "/",
+    validation(validateCreateUser),
+    createUser
+);
+
 // Login User
-router.post("/login", loginUser);
+router.post(
+    "/login",
+    validation(validateLoginUser),
+    loginUser
+);
+
 // Get All Users
 router.get("/", auth, getUsers);
+
 // Get User By ID
-router.get("/:id", auth, getUserById);
+router.get(
+    "/:id",
+    auth,
+    validation(validateGetUser, "params"),
+    getUserById
+);
+
 // Update User
-router.put("/:id", updateUser);
+router.put(
+    "/:id",
+    validation(validateUpdateUser),
+    updateUser
+);
+
 // Delete User
 router.delete("/:id", auth, deleteUser);
 
