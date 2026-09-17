@@ -50,7 +50,7 @@ const validateLoginUser=(data)=>{
         email:Joi.string().email().required(),
         password:Joi.string().required()
     });
-    return scchema.validate(data,{
+    return schema.validate(data,{
         convert:false
     });
 };
