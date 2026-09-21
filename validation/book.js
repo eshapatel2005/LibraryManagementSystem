@@ -20,9 +20,9 @@ const validateCreateBook = (data) => {
 // Get Book Validation
 const validateGetBook = (data) => {
 
-    const cschema = Joi.object({
+    const schema = Joi.object({
         id: Joi.string().required()
-    }); 
+    });
 
     return schema.validate(data, {
         convert: false
