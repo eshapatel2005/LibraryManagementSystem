@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose=require("mongoose");
 
 const userSchema=new mongoose.Schema(
@@ -26,6 +27,11 @@ const userSchema=new mongoose.Schema(
         token:{
             type:String,
             default:""
+        },
+
+        admin:{
+            type:String,
+            required:true
         }
     },
     {
