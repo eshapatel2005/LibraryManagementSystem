@@ -12,6 +12,7 @@ const {
 } = require("../controller/user");
 
 const { auth } = require("../middleware/auth");
+const { adminAuth } = require("../middleware/adminAuth");
 const validation = require("../middleware/validation");
 
 const {
@@ -36,7 +37,7 @@ router.post(
 );
 
 // Get All Users
-router.get("/", auth, getUsers);
+router.get("/", adminAuth, getUsers);
 
 // Get User By ID
 router.get(
