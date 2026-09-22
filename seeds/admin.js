@@ -26,7 +26,7 @@ const createAdmin = async () => {
     await User.create({
       name: "Admin",
       email: "admin@gmail.com",
-      phone: "9999999999",
+      phone: "9313733675",
       password: hashedPassword,
       role: "admin",
     });
