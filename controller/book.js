@@ -123,6 +123,13 @@ const searchBook = async (req, res) => {
       },
     });
 
+    if (books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Book Not Found",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Books Found Successfully",
@@ -193,5 +200,5 @@ module.exports = {
   updateBook,
   deleteBook,
   searchBook,
-  assignBook
+  assignBook,
 };
