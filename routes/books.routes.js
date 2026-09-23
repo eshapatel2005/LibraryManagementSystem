@@ -8,6 +8,7 @@ const {
   getBookById,
   updateBook,
   deleteBook,
+  searchBook
 } = require("../controller/book");
 
 const validation = require("../middleware/validation");
@@ -23,6 +24,9 @@ router.post("/", validation(validateCreateBook), createBook);
 
 // Get All Books
 router.get("/", getBooks);
+
+// Search Book
+router.get("/search", searchBook);
 
 // Get Book By ID
 router.get("/:id", validation(validateGetBook, "params"), getBookById);
