@@ -136,11 +136,62 @@ const searchBook = async (req, res) => {
   }
 };
 
+// Assign Book
+const assignBook = async (req, res) => {
+  try {
+    // Find Book
+    const book = await Book.findById(req.params.id);
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book Not Found",
+      });
+    }
+
+    // Check Book Already Assigned
+    if (book.isIssued) {
+      return res.status(400).json({
+        success: false,
+        message: "Book Already Assigned",
+      });
+    }
+
+    // Find User
+    const user = await User.findById(req.body.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+
+    // Assign Book
+    book.isIssued = true;
+    book.issuedTo = user._id;
+
+    await book.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Book Assigned Successfully",
+      data: book,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
-    createBook,
-    getBooks,
-    getBookById,
-    updateBook,
-    deleteBook,
-    searchBook
+  createBook,
+  getBooks,
+  getBookById,
+  updateBook,
+  deleteBook,
+  searchBook,
+  assignBook
 };
