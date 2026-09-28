@@ -37,6 +37,11 @@ const bookSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+
+    expiryDate: {
+      type: Date,
+      default: null
+    }
   },
 
   {

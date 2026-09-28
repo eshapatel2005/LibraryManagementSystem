@@ -177,7 +177,8 @@ const assignBook = async (req, res) => {
 
     // Assign Book
     book.isIssued = true;
-    book.issuedTo = user._id  ;
+    book.issuedTo = user._id;
+    book.expiryDate = req.body.expiryDate;
 
     await book.save();
 
