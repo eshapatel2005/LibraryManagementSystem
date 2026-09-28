@@ -40,7 +40,7 @@ const getBooks = async (req, res) => {
 // Get Book By ID
 const getBookById = async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id);
+    const book = await Book.findById(req.params.id).populate({"path": "issuedTo", "select": "name phone"});
 
     if (!book) {
       return res.status(404).json({
@@ -177,7 +177,7 @@ const assignBook = async (req, res) => {
 
     // Assign Book
     book.isIssued = true;
-    book.issuedTo = user._id;
+    book.issuedTo = user._id  ;
 
     await book.save();
 
