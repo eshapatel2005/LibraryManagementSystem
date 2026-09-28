@@ -118,7 +118,7 @@ const searchBook = async (req, res) => {
   try {
     const books = await Book.find({
       title: {
-        $regex: req.query.title,
+        $regex: req?.query?.title || "",
         $options: "i",
       },
     });
@@ -136,9 +136,10 @@ const searchBook = async (req, res) => {
       data: books,
     });
   } catch (err) {
+    console.log(":::err.message:::", err.message);
     res.status(500).json({
       success: false,
-      message: err.message,
+      message: "Something wemt wromg",
     });
   }
 };
@@ -200,5 +201,5 @@ module.exports = {
   updateBook,
   deleteBook,
   searchBook,
-  assignBook,
+  assignBook
 };
