@@ -3,7 +3,7 @@ const Book = require("../models/book.model");
 const { sendEmail } = require("../utils/mail.helper");
 
 // Book Reminder Cron
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 * * * *", async () => {
   try {
     const books = await Book.find({
       isIssued: true,
