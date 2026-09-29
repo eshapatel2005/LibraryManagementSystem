@@ -25,7 +25,7 @@ cron.schedule("0 * * * *", async () => {
         const message = `
                     <h2>Book Return Reminder</h2>
                     <p>Hello ${book.issuedTo.name},</p>
-                    <p>Your book<b>${book.title}</b>is due in <b>${daysLeft} day(s)</b>.</p>
+                    <p>Your book<b>${book.title}</b>is due in <b>${daysLeft} days</b>.</p>
                     <p>Please return the book before the expiry date.</p>
                 `;
 
