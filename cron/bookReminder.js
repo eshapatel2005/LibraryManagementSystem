@@ -2,8 +2,6 @@ const cron = require("node-cron");
 const Book = require("../models/book.model");
 const { sendEmail } = require("../utils/mail.helper");
 
-
-// Run every minute for testing
 cron.schedule("* * * * *", async () => {
 
     console.log("Book Reminder Cron Running");
@@ -27,10 +25,10 @@ cron.schedule("* * * * *", async () => {
                 expiryDate.getTime() - today.getTime();
 
             const daysLeft =
-                Math.ceil(difference / (1000 * 60 * 60 * 24));
+                Math.ceil(
+                    difference / (1000 * 60 * 60 * 24)
+                );
 
-
-            // 3 days or 1 day remaining
             if (daysLeft === 3 || daysLeft === 1) {
 
                 const message = `
