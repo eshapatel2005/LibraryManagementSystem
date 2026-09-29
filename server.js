@@ -7,6 +7,8 @@ const connectDB=require("./database/connection");
 const bookRoutes = require("./routes/books.routes");
 const userRoutes = require("./routes/users.routes");
 
+require("./cron/bookReminder");
+
 const app=express();
 
 app.use(cors());

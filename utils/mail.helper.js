@@ -13,10 +13,9 @@ exports.sendEmail = async (mailObj) => {
       },
     });
 
-    const result = await transporter.sendMail(mailObj);
-
-    console.log("email sent", result);
+    await transporter.sendMail(mailObj);
   } catch (error) {
-    console.log("email not sent", error);
+    console.log("email not sent");
+    console.log(error.message);
   }
 };
