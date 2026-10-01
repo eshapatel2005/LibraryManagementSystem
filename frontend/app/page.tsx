@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Search, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Trash2 } from "lucide-react";
 
 import AddBookDialog from "@/components/add-book-dialog";
+import EditBookDialog from "@/components/edit-book-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,6 @@ export default function BooksPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Get all books
   const fetchBooks = async () => {
     try {
       setLoading(true);
@@ -56,7 +56,6 @@ export default function BooksPage() {
     }
   };
 
-  // Search books
   const searchBooks = async () => {
     if (!search.trim()) {
       fetchBooks();
@@ -87,7 +86,6 @@ export default function BooksPage() {
     }
   };
 
-  // Delete book
   const deleteBook = async (id: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this book?",
@@ -117,14 +115,12 @@ export default function BooksPage() {
     }
   };
 
-  // Fetch books when page loads
   useEffect(() => {
     fetchBooks();
   }, []);
 
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
-      {/* Header */}
       <header className="border-b border-slate-200 bg-white">
         <div className="flex h-20 items-center justify-between px-8">
           <div className="flex items-center gap-4">
@@ -145,12 +141,10 @@ export default function BooksPage() {
             </div>
           </div>
 
-          {/* Add Book */}
           <AddBookDialog onBookAdded={fetchBooks} />
         </div>
       </header>
 
-      {/* Main Content */}
       <section className="px-8 py-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-[#172554]">Manage Books</h2>
@@ -160,7 +154,6 @@ export default function BooksPage() {
           </p>
         </div>
 
-        {/* Search */}
         <Card className="mb-6 border-slate-200 bg-white shadow-sm">
           <CardContent className="p-5">
             <div className="flex gap-3">
@@ -200,7 +193,6 @@ export default function BooksPage() {
           </CardContent>
         </Card>
 
-        {/* Books Table */}
         <Card className="border-slate-200 bg-white shadow-sm">
           <CardContent className="p-0">
             <Table>
@@ -216,7 +208,6 @@ export default function BooksPage() {
               </TableHeader>
 
               <TableBody>
-                {/* Loading */}
                 {loading ? (
                   <TableRow>
                     <TableCell
@@ -227,7 +218,6 @@ export default function BooksPage() {
                     </TableCell>
                   </TableRow>
                 ) : books.length === 0 ? (
-                  /* No Books */
                   <TableRow>
                     <TableCell
                       colSpan={6}
@@ -237,10 +227,8 @@ export default function BooksPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  /* Books */
                   books.map((book) => (
                     <TableRow key={book._id}>
-                      {/* Book */}
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
@@ -253,22 +241,18 @@ export default function BooksPage() {
                         </div>
                       </TableCell>
 
-                      {/* Author */}
                       <TableCell className="text-slate-600">
                         {book.author}
                       </TableCell>
 
-                      {/* Category */}
                       <TableCell className="text-slate-600">
                         {book.category}
                       </TableCell>
 
-                      {/* ISBN */}
                       <TableCell className="text-slate-600">
                         {book.isbn}
                       </TableCell>
 
-                      {/* Status */}
                       <TableCell>
                         {book.isIssued ? (
                           <Badge variant="destructive">Issued</Badge>
@@ -279,19 +263,13 @@ export default function BooksPage() {
                         )}
                       </TableCell>
 
-                      {/* Actions */}
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {/* Edit */}
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          <EditBookDialog
+                            book={book}
+                            onBookUpdated={fetchBooks}
+                          />
 
-                          {/* Delete */}
                           <Button
                             variant="outline"
                             size="icon"

@@ -8,9 +8,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -18,15 +18,14 @@ interface AddBookDialogProps {
   onBookAdded: () => void;
 }
 
-export default function AddBookDialog({
-  onBookAdded,
-}: AddBookDialogProps) {
+export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
+  const [open, setOpen] = useState(false);
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
   const [isbn, setIsbn] = useState("");
 
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const addBook = async () => {
@@ -38,21 +37,18 @@ export default function AddBookDialog({
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:5001/api/books",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title,
-            author,
-            category,
-            isbn,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:5001/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          author,
+          category,
+          isbn,
+        }),
+      });
 
       const result = await response.json();
 
@@ -79,74 +75,76 @@ export default function AddBookDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#172554] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1E3A8A]">
-        <Plus className="h-4 w-4" />
+    <>
+      <Button
+        onClick={() => setOpen(true)}
+        className="bg-[#172554] hover:bg-[#1E3A8A]"
+      >
+        <Plus className="mr-2 h-4 w-4" />
         Add Book
-      </DialogTrigger>
+      </Button>
 
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-[#172554]">
-            Add New Book
-          </DialogTitle>
-        </DialogHeader>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#172554]">Add New Book</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
 
-            <Input
-              id="title"
-              placeholder="Enter book title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+              <Input
+                id="title"
+                placeholder="Enter book title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="author">Author</Label>
+
+              <Input
+                id="author"
+                placeholder="Enter author name"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+
+              <Input
+                id="category"
+                placeholder="Enter category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="isbn">ISBN</Label>
+
+              <Input
+                id="isbn"
+                placeholder="Enter ISBN"
+                value={isbn}
+                onChange={(e) => setIsbn(e.target.value)}
+              />
+            </div>
+
+            <Button
+              onClick={addBook}
+              disabled={loading}
+              className="w-full bg-[#0F766E] hover:bg-[#115E59]"
+            >
+              {loading ? "Adding..." : "Add Book"}
+            </Button>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="author">Author</Label>
-
-            <Input
-              id="author"
-              placeholder="Enter author name"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-
-            <Input
-              id="category"
-              placeholder="Enter category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="isbn">ISBN</Label>
-
-            <Input
-              id="isbn"
-              placeholder="Enter ISBN"
-              value={isbn}
-              onChange={(e) => setIsbn(e.target.value)}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={addBook}
-            disabled={loading}
-            className="inline-flex h-10 w-full items-center justify-center rounded-md bg-[#0F766E] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#115E59] disabled:pointer-events-none disabled:opacity-50"
-          >
-            {loading ? "Adding..." : "Add Book"}
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
