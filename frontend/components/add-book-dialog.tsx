@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -19,7 +18,9 @@ interface AddBookDialogProps {
   onBookAdded: () => void;
 }
 
-export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
+export default function AddBookDialog({
+  onBookAdded,
+}: AddBookDialogProps) {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
@@ -37,18 +38,21 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5001/api/books", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          author,
-          category,
-          isbn,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5001/api/books",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title,
+            author,
+            category,
+            isbn,
+          }),
+        }
+      );
 
       const result = await response.json();
 
@@ -76,20 +80,19 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button className="bg-[#172554] hover:bg-[#1E3A8A]">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Book
-        </Button>
+      <DialogTrigger className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#172554] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1E3A8A]">
+        <Plus className="h-4 w-4" />
+        Add Book
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#172554]">Add New Book</DialogTitle>
+          <DialogTitle className="text-[#172554]">
+            Add New Book
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
 
@@ -101,7 +104,6 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
             />
           </div>
 
-          {/* Author */}
           <div className="space-y-2">
             <Label htmlFor="author">Author</Label>
 
@@ -113,7 +115,6 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
             />
           </div>
 
-          {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
 
@@ -125,7 +126,6 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
             />
           </div>
 
-          {/* ISBN */}
           <div className="space-y-2">
             <Label htmlFor="isbn">ISBN</Label>
 
@@ -137,14 +137,14 @@ export default function AddBookDialog({ onBookAdded }: AddBookDialogProps) {
             />
           </div>
 
-          {/* Submit */}
-          <Button
+          <button
+            type="button"
             onClick={addBook}
             disabled={loading}
-            className="w-full bg-[#0F766E] hover:bg-[#115E59]"
+            className="inline-flex h-10 w-full items-center justify-center rounded-md bg-[#0F766E] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#115E59] disabled:pointer-events-none disabled:opacity-50"
           >
             {loading ? "Adding..." : "Add Book"}
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>
