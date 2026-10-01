@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 import {
   BookOpen,
   LayoutDashboard,
@@ -9,6 +12,14 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
   return (
     <aside className="flex h-screen w-64 flex-col bg-[#172554] text-white">
       {/* Logo */}
@@ -18,13 +29,9 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <h1 className="text-sm font-semibold">
-            Library Management
-          </h1>
+          <h1 className="text-sm font-semibold">Library Management</h1>
 
-          <p className="text-xs text-blue-200">
-            System
-          </p>
+          <p className="text-xs text-blue-200">System</p>
         </div>
       </div>
 
@@ -35,26 +42,50 @@ export default function Sidebar() {
         </p>
 
         <div className="space-y-1">
-          <button className="flex w-full items-center gap-3 rounded-lg bg-white/10 px-3 py-3 text-sm font-medium transition hover:bg-white/15">
+          <Link
+            href="/"
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
+              pathname === "/"
+                ? "bg-white/10 text-white"
+                : "text-blue-100 hover:bg-white/10 hover:text-white"
+            }`}
+          >
             <LayoutDashboard className="h-5 w-5" />
             Dashboard
-          </button>
+          </Link>
 
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-blue-100 transition hover:bg-white/10 hover:text-white">
+          <Link
+            href="/books"
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
+              pathname === "/books"
+                ? "bg-white/10 text-white"
+                : "text-blue-100 hover:bg-white/10 hover:text-white"
+            }`}
+          >
             <BookOpen className="h-5 w-5" />
             Books
-          </button>
+          </Link>
 
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-blue-100 transition hover:bg-white/10 hover:text-white">
+          <Link
+            href="/users"
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
+              pathname === "/users"
+                ? "bg-white/10 text-white"
+                : "text-blue-100 hover:bg-white/10 hover:text-white"
+            }`}
+          >
             <Users className="h-5 w-5" />
             Users
-          </button>
+          </Link>
         </div>
       </nav>
 
       {/* Logout */}
       <div className="border-t border-white/10 p-3">
-        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-blue-100 transition hover:bg-white/10 hover:text-white">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-blue-100 transition hover:bg-white/10 hover:text-white"
+        >
           <LogOut className="h-5 w-5" />
           Logout
         </button>

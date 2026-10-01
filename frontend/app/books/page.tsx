@@ -2,12 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Search, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Search,
+  Trash2,
+} from "lucide-react";
+
+import AddBookDialog from "@/components/add-book-dialog";
+import EditBookDialog from "@/components/edit-book-dialog";
+import AssignBookDialog from "@/components/assign-book-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+
 import {
   Table,
   TableBody,
@@ -35,12 +45,14 @@ export default function BooksPage() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5001/api/books");
+      const response = await fetch(
+        "http://localhost:5001/api/books"
+      );
 
       const result = await response.json();
 
       if (response.ok) {
-        setBooks(result.data);
+        setBooks(result.data || []);
       } else {
         setBooks([]);
       }
@@ -63,14 +75,14 @@ export default function BooksPage() {
 
       const response = await fetch(
         `http://localhost:5001/api/books/search?title=${encodeURIComponent(
-          search,
-        )}`,
+          search
+        )}`
       );
 
       const result = await response.json();
 
       if (response.ok) {
-        setBooks(result.data);
+        setBooks(result.data || []);
       } else {
         setBooks([]);
       }
@@ -79,6 +91,45 @@ export default function BooksPage() {
       setBooks([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteBook = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this book?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/books/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Failed to delete book"
+        );
+      }
+
+      alert("Book Deleted Successfully");
+
+      fetchBooks();
+    } catch (error) {
+      console.error("Delete Book Error:", error);
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete book"
+      );
     }
   };
 
@@ -103,26 +154,30 @@ export default function BooksPage() {
             </Link>
 
             <div>
-              <p className="text-sm font-medium text-[#0F766E]">Library</p>
+              <p className="text-sm font-medium text-[#0F766E]">
+                Library
+              </p>
 
-              <h1 className="text-xl font-semibold text-[#172554]">Books</h1>
+              <h1 className="text-xl font-semibold text-[#172554]">
+                Books
+              </h1>
             </div>
           </div>
 
-          <Button className="bg-[#172554] hover:bg-[#1E3A8A]">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Book
-          </Button>
+          <AddBookDialog onBookAdded={fetchBooks} />
         </div>
       </header>
 
       {/* Content */}
       <section className="px-8 py-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-[#172554]">Manage Books</h2>
+          <h2 className="text-2xl font-bold text-[#172554]">
+            Manage Books
+          </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            View and search books available in the library.
+            View, search and manage books available in the
+            library.
           </p>
         </div>
 
@@ -135,7 +190,9 @@ export default function BooksPage() {
 
                 <Input
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) =>
+                    setSearch(event.target.value)
+                  }
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
                       searchBooks();
@@ -177,6 +234,9 @@ export default function BooksPage() {
                   <TableHead>Category</TableHead>
                   <TableHead>ISBN</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -184,7 +244,7 @@ export default function BooksPage() {
                 {loading ? (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="h-32 text-center text-slate-500"
                     >
                       Loading books...
@@ -193,7 +253,7 @@ export default function BooksPage() {
                 ) : books.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="h-32 text-center text-slate-500"
                     >
                       No books found.
@@ -202,6 +262,7 @@ export default function BooksPage() {
                 ) : (
                   books.map((book) => (
                     <TableRow key={book._id}>
+                      {/* Book */}
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
@@ -214,26 +275,61 @@ export default function BooksPage() {
                         </div>
                       </TableCell>
 
+                      {/* Author */}
                       <TableCell className="text-slate-600">
                         {book.author}
                       </TableCell>
 
+                      {/* Category */}
                       <TableCell className="text-slate-600">
                         {book.category}
                       </TableCell>
 
+                      {/* ISBN */}
                       <TableCell className="text-slate-600">
                         {book.isbn}
                       </TableCell>
 
+                      {/* Status */}
                       <TableCell>
                         {book.isIssued ? (
-                          <Badge variant="destructive">Issued</Badge>
+                          <Badge variant="destructive">
+                            Issued
+                          </Badge>
                         ) : (
                           <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
                             Available
                           </Badge>
                         )}
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell>
+                        <div className="flex justify-end gap-2">
+                          {/* Assign */}
+                          <AssignBookDialog
+                            book={book}
+                            onBookAssigned={fetchBooks}
+                          />
+
+                          {/* Edit */}
+                          <EditBookDialog
+                            book={book}
+                            onBookUpdated={fetchBooks}
+                          />
+
+                          {/* Delete */}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={() =>
+                              deleteBook(book._id)
+                            }
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
