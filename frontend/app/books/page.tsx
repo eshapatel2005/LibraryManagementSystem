@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 import {
   ArrowLeft,
   BookOpen,
@@ -37,6 +39,8 @@ interface Book {
 }
 
 export default function BooksPage() {
+  const router = useRouter();
+
   const [books, setBooks] = useState<Book[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -134,8 +138,30 @@ export default function BooksPage() {
   };
 
   useEffect(() => {
-    fetchBooks();
-  }, []);
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
+    if (!token || !userData) {
+      router.replace("/login");
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userData);
+
+      if (user.role !== "admin") {
+        router.replace("/user-dashboard");
+        return;
+      }
+
+      fetchBooks();
+    } catch (error) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      router.replace("/login");
+    }
+  }, [router]);
 
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
@@ -176,8 +202,8 @@ export default function BooksPage() {
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            View, search and manage books available in the
-            library.
+            View, search and manage books available in
+            the library.
           </p>
         </div>
 
